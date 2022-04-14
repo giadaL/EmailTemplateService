@@ -66,5 +66,3 @@ def remove_template_by_id(tid):
 
 def remove_attachment_by_id(aid):
     return _catch(SESSION.query(Attachment).filter_by(id=aid).delete, SQLAlchemyError)
-
-
