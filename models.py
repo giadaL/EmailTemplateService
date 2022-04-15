@@ -14,7 +14,7 @@ class EmailTemplate(_Base):
     filename = Column(String, nullable=False, index=True, unique=True)
     template = Column(LargeBinary, nullable=False)
     subject = Column(String, nullable=False)
-    attachments = relationship("Attachment")
+    attachments = relationship("Attachment", lazy='subquery')
 
     loaded = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -26,10 +26,10 @@ class EmailTemplate(_Base):
 class Attachment(_Base):
     __tablename__ = 'attachments'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    filename = Column(String, nullable=False)
+    filename = Column(String, nullable=False, index=True)
     file = Column(LargeBinary, nullable=False)
     mimetype = Column(String, nullable=False)
-    template_id = Column(UUID, ForeignKey("templates.id"), nullable=False)
+    template_id = Column(UUID(as_uuid=True), ForeignKey("templates.id"), nullable=False)
 
     def __repr__(self):
         return "<Attachment(filename='{}', file='{}', mimeType={}, template_id={})>" \

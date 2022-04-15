@@ -18,4 +18,3 @@ def _session_create():
 
 
 SESSION = _session_create
-

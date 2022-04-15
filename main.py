@@ -7,7 +7,7 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOU
 
 import service
 from database import SESSION
-from schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO
+from schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO, CreateAttachmentDTO, AttachmentDTO
 
 app = FastAPI()
 
@@ -71,9 +71,12 @@ def remove_template(template_id: UUID, session: Session = Depends(SESSION)):
         content='{"message": "something went wrong, can\'t delete" }', media_type="application/json")
 
 
-@app.post("/attachment")
-def save_attachment() -> Response:
+@app.post("/template/{template_id}/attachment", response_model=AttachmentDTO)
+def save_attachment(template_id: UUID, attachment: CreateAttachmentDTO, session: Session = Depends(SESSION)):
     """
     upload attachment and link  it to a template
     """
-    # TODO
+    res, err = service.upload_attachment(template_id, attachment, session)
+    return res if res else Response(
+        status_code=HTTP_400_BAD_REQUEST,
+        content=err, media_type="application/json")

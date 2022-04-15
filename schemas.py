@@ -32,5 +32,5 @@ class CreateAttachmentDTO(BaseModel):
 
 class AttachmentDTO(BaseModel):
     id: UUID
-    base64: str
-    template_id: str
+    filename: str
+    template_id: UUID
