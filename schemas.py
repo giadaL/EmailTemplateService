@@ -1,30 +1,36 @@
 from uuid import UUID
 
+from pydantic import BaseModel
 
-class CreateTemplateDTO:
+
+class CreateTemplateDTO(BaseModel):
     base64: str
     subject: str
+    filename: str
 
 
-class UpdateTemplateDTO:
+class UpdateTemplateDTO(BaseModel):
     id: UUID
     subject: str
     attachments: list[UUID]
+    filename: str
 
 
-class TemplateDTO:
+class TemplateDTO(BaseModel):
     id: UUID
-    base64: str
     subject: str
     attachments: list[UUID]
+    filename: str
 
 
-class CreateAttachmentDTO:
+class CreateAttachmentDTO(BaseModel):
     base64: str
+    filename: str
+    mimetype: str
     template_id: UUID
 
 
-class AttachmentDTO:
+class AttachmentDTO(BaseModel):
     id: UUID
     base64: str
     template_id: str

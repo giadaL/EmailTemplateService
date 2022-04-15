@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 _Base = declarative_base()
 
 
-class EmailTemplates(_Base):
+class EmailTemplate(_Base):
     __tablename__ = 'templates'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     filename = Column(String, nullable=False, index=True, unique=True)
