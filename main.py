@@ -5,7 +5,7 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 import service
 from database import SESSION
-from schemas import CreateTemplateDTO
+from schemas import CreateTemplateDTO, UpdateTemplateDTO
 
 app = FastAPI()
 
@@ -22,12 +22,16 @@ async def create_template(template: CreateTemplateDTO, session: Session = Depend
         else Response(status_code=HTTP_400_BAD_REQUEST, content=err, media_type="application/json")
 
 
-@app.put("/template")
-async def update_template() -> Response:
+@app.put("/template", response_class=ORJSONResponse)
+async def update_template(template: UpdateTemplateDTO, session: Session = Depends(SESSION)) -> Response:
     """
-    update existing template by name
+    update existing template by id
     """
-    # TODO
+    res, err = service.update_template(template, session)
+
+    return Response(status_code=HTTP_200_OK, content=res.json(), media_type="application/json") \
+        if res \
+        else Response(status_code=HTTP_400_BAD_REQUEST, content=err, media_type="application/json")
 
 
 @app.get("/template")
