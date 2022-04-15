@@ -1,7 +1,9 @@
+from uuid import UUID
+
 from fastapi import FastAPI, Response, Depends
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
 import service
 from database import SESSION
@@ -34,12 +36,16 @@ async def update_template(template: UpdateTemplateDTO, session: Session = Depend
         else Response(status_code=HTTP_400_BAD_REQUEST, content=err, media_type="application/json")
 
 
-@app.get("/template")
-async def find_template() -> Response:
+@app.get("/template/{template_id}", response_class=ORJSONResponse)
+async def find_template(template_id: UUID, session: Session = Depends(SESSION)) -> Response:
     """
-    get template by name
+    get template by id
     """
-    # TODO
+    res = service.get_template_by_id(template_id, session)
+
+    return Response(status_code=HTTP_200_OK, content=res.json(), media_type="application/json") \
+        if res \
+        else Response(status_code=HTTP_404_NOT_FOUND, content="{}", media_type="application/json")
 
 
 @app.get("/templates")

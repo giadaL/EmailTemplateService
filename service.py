@@ -1,4 +1,5 @@
 from base64 import b64decode
+from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -72,6 +73,8 @@ def get_all_templates():
     # TODO
 
 
-def get_template_by_name():
-    pass
-    # TODO
+def get_template_by_id(template_id: UUID, session: Session) -> TemplateDTO:
+    template = find_templates_by_id(template_id, session)
+
+    return TemplateDTO(id=template.id, subject=template.subject, filename=template.filename,
+                       attachments=template.attachments) if template else None
