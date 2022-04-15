@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from models import EmailTemplate
-from repository import save_template, find_template_by_name, find_templates_by_id, find_attachments_by_id_in, \
+from repository import save_template, find_template_by_name, find_all_templates, find_templates_by_id, \
+    find_attachments_by_id_in, \
     save_all_attachments, remove_attachments_by_id_in
 from schemas import CreateTemplateDTO, TemplateDTO, UpdateTemplateDTO
 
@@ -68,9 +69,14 @@ def remove_template():
     # TODO
 
 
-def get_all_templates():
-    pass
-    # TODO
+def get_all_templates(session: Session) -> list[TemplateDTO]:
+    templates = find_all_templates(session)
+
+    def remap_templates(template: EmailTemplate):
+        attachs = [at.id for at in template.attachments]
+        return TemplateDTO(id=template.id, subject=template.subject, attachments=attachs, filename=template.filename)
+
+    return list(map(remap_templates, templates))
 
 
 def get_template_by_id(template_id: UUID, session: Session) -> TemplateDTO:

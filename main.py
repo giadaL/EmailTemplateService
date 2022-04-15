@@ -1,43 +1,43 @@
+from typing import List
 from uuid import UUID
 
 from fastapi import FastAPI, Response, Depends
-from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
 import service
 from database import SESSION
-from schemas import CreateTemplateDTO, UpdateTemplateDTO
+from schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO
 
 app = FastAPI()
 
 
-@app.post("/template", response_class=ORJSONResponse)
-async def create_template(template: CreateTemplateDTO, session: Session = Depends(SESSION)) -> Response:
+@app.post("/template", response_model=TemplateDTO)
+def create_template(template: CreateTemplateDTO, session: Session = Depends(SESSION)):
     """
     save template on db
     """
     res, err = service.create_template(template, session)
 
-    return Response(status_code=HTTP_200_OK, content=res.json(), media_type="application/json") \
+    return res \
         if res \
         else Response(status_code=HTTP_400_BAD_REQUEST, content=err, media_type="application/json")
 
 
-@app.put("/template", response_class=ORJSONResponse)
-async def update_template(template: UpdateTemplateDTO, session: Session = Depends(SESSION)) -> Response:
+@app.put("/template", response_model=TemplateDTO)
+def update_template(template: UpdateTemplateDTO, session: Session = Depends(SESSION)) -> Response:
     """
     update existing template by id
     """
     res, err = service.update_template(template, session)
 
-    return Response(status_code=HTTP_200_OK, content=res.json(), media_type="application/json") \
+    return res \
         if res \
         else Response(status_code=HTTP_400_BAD_REQUEST, content=err, media_type="application/json")
 
 
-@app.get("/template/{template_id}", response_class=ORJSONResponse)
-async def find_template(template_id: UUID, session: Session = Depends(SESSION)) -> Response:
+@app.get("/template/{template_id}", response_model=TemplateDTO)
+def find_template(template_id: UUID, session: Session = Depends(SESSION)) -> Response:
     """
     get template by id
     """
@@ -48,16 +48,18 @@ async def find_template(template_id: UUID, session: Session = Depends(SESSION)) 
         else Response(status_code=HTTP_404_NOT_FOUND, content="{}", media_type="application/json")
 
 
-@app.get("/templates")
-async def find_all_templates() -> Response:
+@app.get("/templates", response_model=List[TemplateDTO])
+def find_all_templates(session: Session = Depends(SESSION)):
     """
     get all templates
     """
-    # TODO
+    res = service.get_all_templates(session)
+
+    return res
 
 
 @app.delete("/template")
-async def remove_template() -> Response:
+def remove_template() -> Response:
     """
     remove template by name
     """
@@ -65,7 +67,7 @@ async def remove_template() -> Response:
 
 
 @app.post("/attachment")
-async def save_attachment() -> Response:
+def save_attachment() -> Response:
     """
     upload attachment and link  it to a template
     """
