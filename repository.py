@@ -47,6 +47,7 @@ def _catch(function, errors, session, params=None, ) -> (bool, str):
     except UniqueViolation:
         res = False
         error = '{ "message": "invalid field , duplicate key"}'
+        print("=======================", error)
         session.rollback()
         session.close()
     except NotNullViolation:
@@ -57,12 +58,13 @@ def _catch(function, errors, session, params=None, ) -> (bool, str):
     except errors as e:
         res = False
         error = json.loads(e)
-
+        print("============================", error)
         session.rollback()
         session.close()
     except:
         res = False
         error = '{"message": "something went wrong"}'
+        print("============================", error)
 
         session.rollback()
         session.close()
@@ -87,12 +89,12 @@ def save_all_attachments(attachments: list[Attachment], session) -> (bool, str):
 
 
 def remove_template_by_id(tid, session):
-    return _catch(session.query(EmailTemplate).filter_by(id=tid).delete(), SQLAlchemyError, session)
+    return _catch(session.query(EmailTemplate).filter(EmailTemplate.id == tid).delete, SQLAlchemyError, session)
 
 
 def remove_attachment_by_id(aid, session):
-    return _catch(session.query(Attachment).filter_by(id=aid).delete(), SQLAlchemyError, session)
+    return _catch(session.query(Attachment).filter(Attachment.id == aid).delete, SQLAlchemyError, session)
 
 
 def remove_attachments_by_id_in(att_ids, session):
-    return _catch(session.query(Attachment).filter(Attachment.id.in_(att_ids)).delete(), SQLAlchemyError, session)
+    return _catch(session.query(Attachment).filter(Attachment.id.in_(att_ids)).delete, SQLAlchemyError, session)

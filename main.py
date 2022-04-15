@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import FastAPI, Response, Depends
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
 import service
 from database import SESSION
@@ -58,12 +58,17 @@ def find_all_templates(session: Session = Depends(SESSION)):
     return res
 
 
-@app.delete("/template")
-def remove_template() -> Response:
+@app.delete("/template/{template_id}")
+def remove_template(template_id: UUID, session: Session = Depends(SESSION)):
     """
-    remove template by name
+    remove template by id
     """
-    # TODO
+    res, error = service.remove_template(template_id, session)
+    print("=============================", res)
+    return Response(status_code=HTTP_200_OK,
+                    content='{"message": "delete success"}', media_type="application/json") if res else Response(
+        status_code=HTTP_409_CONFLICT,
+        content='{"message": "something went wrong, can\'t delete" }', media_type="application/json")
 
 
 @app.post("/attachment")

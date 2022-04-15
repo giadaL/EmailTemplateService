@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from models import EmailTemplate
 from repository import save_template, find_template_by_name, find_all_templates, find_templates_by_id, \
     find_attachments_by_id_in, \
-    save_all_attachments, remove_attachments_by_id_in
+    save_all_attachments, remove_attachments_by_id_in, remove_template_by_id
 from schemas import CreateTemplateDTO, TemplateDTO, UpdateTemplateDTO
 
 
@@ -64,9 +64,8 @@ def update_template(template: UpdateTemplateDTO, session):
                        attachments=attachments), None
 
 
-def remove_template():
-    pass
-    # TODO
+def remove_template(template_id: UUID, session: Session) -> (bool, str):
+    return remove_template_by_id(template_id, session)
 
 
 def get_all_templates(session: Session) -> list[TemplateDTO]:
