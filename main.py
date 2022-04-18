@@ -8,6 +8,7 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOU
 import service
 from database import SESSION
 from schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO, CreateAttachmentDTO, AttachmentDTO
+import uvicorn
 
 app = FastAPI()
 
@@ -80,3 +81,7 @@ def save_attachment(template_id: UUID, attachment: CreateAttachmentDTO, session:
     return res if res else Response(
         status_code=HTTP_400_BAD_REQUEST,
         content=err, media_type="application/json")
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", port=5000, reload=True, access_log=False)
