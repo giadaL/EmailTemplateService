@@ -16,7 +16,7 @@ class UpdateTemplateDTO(BaseModel):
     filename: str
 
 
-class TemplateDTO(BaseModel):
+class TemplateInfoDTO(BaseModel):
     id: UUID
     subject: str
     attachments: list[UUID]
@@ -34,3 +34,11 @@ class AttachmentDTO(BaseModel):
     id: UUID
     filename: str
     template_id: UUID
+    base64: str
+    mimetype: str
+
+
+class TemplateDTO(BaseModel):
+    base64: str
+    filename: str
+    id: UUID

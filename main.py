@@ -1,19 +1,20 @@
 from typing import List
 from uuid import UUID
 
+import uvicorn
 from fastapi import FastAPI, Response, Depends
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
 import service
 from database import SESSION
-from schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO, CreateAttachmentDTO, AttachmentDTO
-import uvicorn
+from schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateInfoDTO, CreateAttachmentDTO, AttachmentDTO, \
+    TemplateDTO
 
 app = FastAPI()
 
 
-@app.post("/template", response_model=TemplateDTO)
+@app.post("/template", response_model=TemplateInfoDTO)
 def create_template(template: CreateTemplateDTO, session: Session = Depends(SESSION)):
     """
     save template on db
@@ -25,7 +26,7 @@ def create_template(template: CreateTemplateDTO, session: Session = Depends(SESS
         else Response(status_code=HTTP_400_BAD_REQUEST, content=err, media_type="application/json")
 
 
-@app.put("/template", response_model=TemplateDTO)
+@app.put("/template", response_model=TemplateInfoDTO)
 def update_template(template: UpdateTemplateDTO, session: Session = Depends(SESSION)) -> Response:
     """
     update existing template by id
@@ -37,22 +38,34 @@ def update_template(template: UpdateTemplateDTO, session: Session = Depends(SESS
         else Response(status_code=HTTP_400_BAD_REQUEST, content=err, media_type="application/json")
 
 
-@app.get("/template/{template_id}", response_model=TemplateDTO)
+@app.get("/template/{template_id}/info", response_model=TemplateInfoDTO)
 def find_template(template_id: UUID, session: Session = Depends(SESSION)) -> Response:
     """
-    get template by id
+    get template info by id
     """
-    res = service.get_template_by_id(template_id, session)
+    res = service.get_template_info_by_id(template_id, session)
 
     return Response(status_code=HTTP_200_OK, content=res.json(), media_type="application/json") \
         if res \
         else Response(status_code=HTTP_404_NOT_FOUND, content="{}", media_type="application/json")
 
 
-@app.get("/templates", response_model=List[TemplateDTO])
+@app.get("/template/{template_name}", response_model=TemplateDTO)
+def find_template_by_name(template_name: str, session: Session = Depends(SESSION)) -> Response:
+    """
+    get template by name
+    """
+    res = service.get_template_by_name(template_name, session)
+
+    return Response(status_code=HTTP_200_OK, content=res.json(), media_type="application/json") \
+        if res \
+        else Response(status_code=HTTP_404_NOT_FOUND, content="{}", media_type="application/json")
+
+
+@app.get("/templates/info", response_model=List[TemplateInfoDTO])
 def find_all_templates(session: Session = Depends(SESSION)):
     """
-    get all templates
+    get all templates infos
     """
     res = service.get_all_templates(session)
 
@@ -65,7 +78,6 @@ def remove_template(template_id: UUID, session: Session = Depends(SESSION)):
     remove template by id
     """
     res, error = service.remove_template(template_id, session)
-    print("=============================", res)
     return Response(status_code=HTTP_200_OK,
                     content='{"message": "delete success"}', media_type="application/json") if res else Response(
         status_code=HTTP_409_CONFLICT,
@@ -78,6 +90,17 @@ def save_attachment(template_id: UUID, attachment: CreateAttachmentDTO, session:
     upload attachment and link  it to a template
     """
     res, err = service.upload_attachment(template_id, attachment, session)
+    return res if res else Response(
+        status_code=HTTP_400_BAD_REQUEST,
+        content=err, media_type="application/json")
+
+
+@app.get("/template/{template_id}/attachments", response_model=list[AttachmentDTO])
+def get_attachments(template_id: UUID, session: Session = Depends(SESSION)):
+    """
+    upload attachment and link  it to a template
+    """
+    res, err = service.get_template_attachments(template_id, session)
     return res if res else Response(
         status_code=HTTP_400_BAD_REQUEST,
         content=err, media_type="application/json")
