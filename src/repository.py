@@ -5,7 +5,7 @@ from psycopg2.errors import NotNullViolation, UniqueViolation
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
-from models import EmailTemplate, Attachment
+from src.models import EmailTemplate, Attachment
 
 
 def find_all_templates(session) -> list[EmailTemplate]:

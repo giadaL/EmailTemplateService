@@ -4,12 +4,12 @@ from uuid import UUID
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from models import EmailTemplate, Attachment
-from repository import save_template, find_template_by_name, find_all_templates, find_templates_by_id, \
+from src.models import EmailTemplate, Attachment
+from src.repository import save_template, find_template_by_name, find_all_templates, find_templates_by_id, \
     find_attachments_by_id_in, \
     save_all_attachments, remove_attachments_by_id_in, remove_template_by_id, save_attachment, \
     find_attachments_by_template_id
-from schemas import CreateTemplateDTO, TemplateInfoDTO, UpdateTemplateDTO, CreateAttachmentDTO, AttachmentDTO, \
+from src.schemas import CreateTemplateDTO, TemplateInfoDTO, UpdateTemplateDTO, CreateAttachmentDTO, AttachmentDTO, \
     TemplateDTO
 
 

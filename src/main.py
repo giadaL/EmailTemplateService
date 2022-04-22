@@ -1,14 +1,13 @@
 from typing import List
 from uuid import UUID
 
-import uvicorn
 from fastapi import FastAPI, Response, Depends
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
-import service
-from database import SESSION
-from schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateInfoDTO, CreateAttachmentDTO, AttachmentDTO, \
+import src.service as service
+from src.database import SESSION
+from src.schemas import CreateTemplateDTO, UpdateTemplateDTO, TemplateInfoDTO, CreateAttachmentDTO, AttachmentDTO, \
     TemplateDTO
 
 app = FastAPI()
@@ -104,7 +103,3 @@ def get_attachments(template_id: UUID, session: Session = Depends(SESSION)):
     return res if res else Response(
         status_code=HTTP_400_BAD_REQUEST,
         content=err, media_type="application/json")
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", port=5000, reload=True, access_log=False)

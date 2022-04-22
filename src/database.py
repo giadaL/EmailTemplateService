@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from config import DB_CONFIG
-from models import db_create_all
+from src.models import db_create_all
 
 _engine = create_engine(DB_CONFIG.dbUri,
                         echo=True)
